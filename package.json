@@ -21,5 +21,13 @@
     "mysql2": "^2.3.3",
     "pug": "^3.0.2",
     "sequelize": "^6.21.4"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/the-unexpected-one/03-rendering-the-product-detail-view.git"
+  },
+  "bugs": {
+    "url": "https://github.com/the-unexpected-one/03-rendering-the-product-detail-view/issues"
+  },
+  "homepage": "https://github.com/the-unexpected-one/03-rendering-the-product-detail-view#readme"
 }

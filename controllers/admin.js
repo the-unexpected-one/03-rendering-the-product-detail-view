@@ -1,6 +1,7 @@
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
+  console.log('8 ');
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
@@ -8,18 +9,21 @@ exports.getAddProduct = (req, res, next) => {
    
   });
 };
-
+//abc
 exports.postAddProduct = (req, res, next) => {
+  console.log('10')
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  Product.create({
+  req.user.createProduct({
     title:title,
     price:price,
     imageUrl:imageUrl,
-    description:description
-  }).then(result=>{
+    description:description,
+    // userId: req.user.id
+  })
+   .then(result=>{
     // console.log(result)
     console.log('Product Created')
     res.redirect('/admin/products')
@@ -35,8 +39,10 @@ exports.getEditProduct=(req, res, next) => {
      return res.redirect('/');
     }
     const prodId=req.params.productId;
-    Product.findByPk(prodId)
-    .then(product=>{
+    req.user.getProducts({where:{id:prodId}})
+    // Product.findByPk(prodId)
+    .then(products=>{
+      const product=products[0];
       if(!product)
       {
         return res.redirect('/');
@@ -82,6 +88,8 @@ exports.postEditProduct=(req,res,next)=>{
 };
 
 exports.getProducts = (req, res, next) => {
+  req.user.getProducts()
+  console.log('11')
   Product.findAll()
   .then(products=>{
     res.render('admin/products', {
@@ -89,6 +97,7 @@ exports.getProducts = (req, res, next) => {
       pageTitle: 'Admin Products',
       path: '/admin/products'
     });
+    // res.json(products)
   })
   .catch(err=>{
     console.log(err)
