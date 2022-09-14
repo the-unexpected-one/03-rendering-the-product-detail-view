@@ -1,12 +1,15 @@
 const Product = require('../models/product');
 const Cart=require('../models/cart');
+
+
 exports.getProducts = (req, res, next) => {
   Product.findAll().then(products=>{
-    res.render('shop/product-list', {
-      prods: products,
-      pageTitle: 'All Products',
-      path: '/products'
-    });
+    res.json(products)
+    // res.render('shop/product-list', {
+    //   prods: products,
+    //   pageTitle: 'All Products',
+    //   path: '/products'
+    // });
   }).catch(err=>{
     console.log(err)
   })
@@ -64,12 +67,18 @@ exports.getCart = (req, res, next) => {
   req.user
   .getCart()
   .then(cart=>{
+    // console.log(cart)
+    const cartp=cart.getProducts()
+    console.log(cartp)
    return cart.getProducts().then(products=>{
-    res.render('shop/cart', {
-            path: '/cart',
-            pageTitle: 'Your Cart',
-            products: products
-          });
+    console.log(products)
+    // res.render('shop/cart', {
+    //         path: '/cart',
+    //         pageTitle: 'Your Cart',
+    //         products: products
+    //       });
+    console.log(products)
+    res.json(products)
    }).catch(err=>{
     console.log(err);
    })
@@ -98,12 +107,15 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart=(req,res,next)=>{
+ 
   const prodId=req.body.productId;
+  console.log(prodId);
   let fetchedCart;
   let newQuantity=1;
   req.user
   .getCart()
   .then(cart=>{
+    console.log(cart)
     fetchedCart=cart;
     return cart.getProducts({where: {id:prodId}});
   })
@@ -114,9 +126,8 @@ exports.postCart=(req,res,next)=>{
     {
       product=products[0];
     }
-
-   
-    if(product){
+ 
+    if(product){//if product already exists
       //...
       const oldQuantity=product.cartItem.quantity;
       newQuantity=oldQuantity+1;
@@ -134,12 +145,13 @@ exports.postCart=(req,res,next)=>{
   
    
     .then(()=>{
-      res.redirect('/cart')
+      // res.redirect('/cart')
+      res.status(200).json({success:true, message:'Succesfully aadded product to cart'})
     })
   
   
   .catch(err=>{
-    console.log(err)
+    res.status(500).json({success:false,message:'Error occured'})
   })
 }
 // Product.findById(prodId,(product)=>{
