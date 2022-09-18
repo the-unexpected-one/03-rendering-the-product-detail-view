@@ -1,5 +1,7 @@
 const Product = require('../models/product');
 const Cart=require('../models/cart');
+const Order=require('../models/order');
+const User = require('../models/user');
 const ITEMS_PER_PAGE=2;
 
 
@@ -239,6 +241,34 @@ exports.getOrders = (req, res, next) => {
     pageTitle: 'Your Orders'
   });
 };
+
+exports.postOrders=(req,res,next)=>{
+  const User=req.user;
+  req.user.getCart()
+  .then(cart=>{
+  
+    return cart.getProducts()
+  }).then(products=>{
+    User.createOrder()
+    .then(order=>{
+      // console.log(products)
+      const len=products.length;
+      for(let i=0;i<len;i++){
+        // console.log(products[i].cartItem.quantity)
+        order.addProduct(products[i],{through:
+          {quantity:products[i].cartItem.quantity}
+        })
+      }
+    })
+  }).then(()=>{
+
+    console.log(req.user.id)
+    // res.redirect('/cart')
+    res.status(200).json({orderId:req.user.id, message:`OrderId: ${req.user.id}:Succesfully placed your order`})
+  }).catch(err=>{
+    res.status(500).json({success:false,message:'Error occured'})
+  })
+}
 
 exports.getCheckout = (req, res, next) => {
   res.render('shop/checkout', {
