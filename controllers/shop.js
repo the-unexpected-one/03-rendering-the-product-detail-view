@@ -236,10 +236,28 @@ exports.postCartDeleteProduct=(req,res,next)=>{
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render('shop/orders', {
-    path: '/orders',
-    pageTitle: 'Your Orders'
-  });
+ let ordersinfo=[]
+  req.user
+  .getOrders()
+  .then(async (orders)=>{
+    // console.log(order[0].getProducts);
+    for(let i=0;i<orders.length;i++){
+      let products=await orders[i].getProducts()
+      let ordersobj={
+        order:orders[i],
+        products:products
+      }
+      ordersinfo.push(ordersobj)
+    }
+    res.json({ordersinfo:ordersinfo})
+  })
+  .catch(err=>console.log(err))
+ 
+
+  // res.render('shop/orders', {
+  //   path: '/orders',
+  //   pageTitle: 'Your Orders'
+  // });
 };
 
 exports.postOrders=(req,res,next)=>{
